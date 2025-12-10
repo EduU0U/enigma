@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Entrada — Aldeia de Pedra</title>
+  <style>
+    :root{
+      --bg:#efe6d8; /* pergaminho */
+      --panel:#f7efe2;
+      --accent:#4b2e1a;
+      --muted:#8b7761;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: "Garamond", "Times New Roman", Georgia, serif;
+      background: radial-gradient(circle at 10% 10%, rgba(75,46,26,0.06), transparent 10%), linear-gradient(180deg, #f6efe6 0%, var(--bg) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:2rem;
+      color:var(--accent);
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+      backdrop-filter: blur(2px);
+      border-radius:18px;
+      width:100%;
+      max-width:520px;
+      padding:36px 30px;
+      box-shadow: 0 10px 30px rgba(10,10,10,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+      border: 1px solid rgba(75,46,26,0.08);
+    }
+
+    h1{
+      margin:0 0 8px 0;
+      font-size:28px;
+      letter-spacing:1px;
+    }
+    p.lead{margin:0 0 22px 0; color:var(--muted);}
+
+    form{display:flex; gap:10px; align-items:center;}
+    input[type=text]{
+      flex:1;
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid rgba(75,46,26,0.12);
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3));
+      font-size:16px;
+      font-family:inherit;
+      outline:none;
+      transition: box-shadow .18s, transform .12s;
+    }
+    input[type=text]:focus{box-shadow:0 6px 20px rgba(75,46,26,0.06); transform:translateY(-2px);} 
+
+    button{
+      padding:10px 16px;
+      border-radius:10px;
+      border:2px solid var(--accent);
+      background:linear-gradient(180deg, rgba(75,46,26,0.95), rgba(46,26,15,0.95));
+      color:white;
+      font-weight:700;
+      cursor:pointer;
+      font-family:inherit;
+    }
+    button:active{transform:translateY(1px);} 
+
+    .hint{font-size:12px; color:var(--muted); margin-top:12px}
+    .error{color:#9b231f; font-weight:700; margin-top:10px; min-height:18px}
+
+    /* reveal area */
+    .reveal-wrap{margin-top:22px; text-align:center;}
+    .reveal{
+      display:inline-block;
+      max-width:260px;
+      max-height:260px;
+      padding:14px;
+      border-radius:12px;
+      border:1px solid rgba(75,46,26,0.08);
+      background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.6));
+      box-shadow: 0 10px 30px rgba(20,10,5,0.06);
+      opacity:0;
+      transform:translateY(18px) scale(.98);
+      transition:opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1);
+    }
+    .reveal.visible{opacity:1; transform:translateY(0) scale(1);} 
+
+    /* decorative border */
+    .ornament{
+      height:6px;
+      margin-bottom:18px;
+      background:repeating-linear-gradient(90deg, rgba(75,46,26,0.12) 0 6px, rgba(75,46,26,0.02) 6px 12px);
+      border-radius:4px;
+    }
+
+    /* small shake animation for wrong attempts */
+    @keyframes shake{0%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} 100%{transform:translateX(0)}}
+    .shake{animation:shake .42s ease}
+
+    footer.credit{margin-top:18px; font-size:12px; color:var(--muted); text-align:right}
+
+    /* responsive */
+    @media (max-width:420px){.card{padding:24px}}
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="title">
+    <div class="ornament" aria-hidden="true"></div>
+    <h1 id="title">Portal da Aldeia</h1>
+    <p class="lead">Somente o nome certo pode trazer o que jaz oculto. Digite a palavra-mestre.</p>
+
+    <form id="form" autocomplete="off">
+      <label for="senha" class="sr-only">Senha</label>
+      <input id="senha" name="senha" type="text" placeholder="Digite a senha aqui" aria-label="Senha" required />
+      <button type="submit">Abrir</button>
+    </form>
+
+    <div class="hint">Dica: é sensível a maiúsculas — digite a palavra exata.</div>
+    <div class="error" id="error" aria-live="polite"></div>
+
+    <div class="reveal-wrap">
+      <!-- SVG embutido (sem fontes externas) — ficará visível apenas quando a senha estiver correta -->
+      <div id="reveal" class="reveal" role="status" aria-hidden="true">
+        <!-- um brasão simples em SVG -->
+        <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="false">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#f6e9d6" />
+              <stop offset="1" stop-color="#e9d7b9" />
+            </linearGradient>
+          </defs>
+          <rect width="220" height="220" rx="16" fill="url(#g1)" stroke="#b08a63" stroke-width="3" />
+          <g transform="translate(40,40)">
+            <path d="M60 0 L100 20 L100 70 L60 90 L20 70 L20 20 Z" fill="#70422a" stroke="#2b1509" stroke-width="3" />
+            <circle cx="60" cy="36" r="14" fill="#ffd48a" stroke="#4b2e1a" stroke-width="2" />
+            <text x="60" y="36" font-family="Garamond,serif" font-size="12" fill="#4b2e1a" text-anchor="middle" dominant-baseline="central">TORIEL</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <footer class="credit">— Guardião da Aldeia</footer>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('form');
+      const input = document.getElementById('senha');
+      const error = document.getElementById('error');
+      const reveal = document.getElementById('reveal');
+
+      function showError(msg){
+        error.textContent = msg;
+        input.classList.add('shake');
+        setTimeout(()=> input.classList.remove('shake'), 420);
+      }
+
+      form.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const val = input.value.trim();
+        // Only accept the exact single word TORIEL (case-sensitive)
+        if(/^TORIEL$/.test(val)){
+          error.textContent = '';
+          reveal.classList.add('visible');
+          reveal.setAttribute('aria-hidden','false');
+          // scroll reveal into view on small screens
+          reveal.scrollIntoView({behavior:'smooth', block:'center'});
+        } else {
+          reveal.classList.remove('visible');
+          reveal.setAttribute('aria-hidden','true');
+          if(val === ''){
+            showError('Por favor digite a senha.');
+          } else {
+            showError('Senha incorreta.');
+          }
+        }
+      });
+
+      // Optional: allow clearing the reveal when user edits
+      input.addEventListener('input', ()=>{
+        if(!/^TORIEL$/.test(input.value.trim())){
+          reveal.classList.remove('visible');
+          reveal.setAttribute('aria-hidden','true');
+        }
+        error.textContent = '';
+      });
+
+    })();
+  </script>
+</body>
+</html>
